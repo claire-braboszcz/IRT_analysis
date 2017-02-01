@@ -1,0 +1,259 @@
+---
+title: "Results Analysis IRT  "
+output: html_notebook
+---
+
+
+Analyses de modération à l'aide de  modèles linéaires
+======================================================
+
+Résumé des résultats
+--------------------
+
+Analyse réalisée avec des modèles linéaire (ie. équivalent anova)
+
+### Variable "cauchemars"
+Un seul effet de modération a été trouvé, celui de l'effet du score de qualité de sommeil/10 sur l'amélioration du nombre de nuits avec cauchemras par mois.
+
+### Variable "PTSD"
+Seul effet de modération trouvé: le score de PCLS influe sur l'amélioration du score de IERS (mais non-indépendance de ces 2 mesures ??)
+
+### Variable "sommeil"
+Variable avec le plus d'effets de modération.
+
+- L'amélioration de la qualité de sommeil (/10) est modérée par le score d'IERS-évitement et le score de PCLS.
+
+- L'amélioration du score de PSQI est modéré par tout les scores de PTSD sauf IERS Intrusion, ainsi que par les score WBSI suppression et intrusion. Effet non sigbificatif mais tangent du score de ISI. 
+
+- L'amélioration du score de ISI est modéré par IERS neurovégétatif et score global (tangent pour IERS intrusion) ainsi que par le score de PSQI, dépression et WBSI suppression et intrusion.
+ 
+ 
+```{r}
+setwd('/home/claire/DATA/Etude Benjamin/')
+data48 <- read.csv('n48_PrePostSuivi.csv')
+patient<-1:48
+data48$patient<-as.factor(patient)
+
+#-------------------
+## Data Centering
+#-------------------
+
+# PTSD
+data48$IERSIntrusionSouvenirs.PRE<-data48$IERSIntrusionSouvenirs.PRE-mean(data48$IERSIntrusionSouvenirs.PRE)
+data48$IERSEvitement.PRE<-data48$IERSEvitement.PRE - mean(data48$IERSEvitement.PRE)
+data48$IERSActivationNeurovégétative.PRE <-data48$IERSActivationNeurovégétative.PRE - mean(data48$IERSActivationNeurovégétative.PRE)
+data48$IERS.Global.PRE<-data48$IERS.Global.PRE-mean(data48$IERS.Global.PRE)
+data48$PCLS.PRE<-data48$PCLS.PRE-mean(data48$PCLS.PRE)
+
+# Sommeil
+data48$Epworth.PRE<-data48$Epworth.PRE-mean(data48$Epworth.PRE)
+data48$ISI.PRE<-data48$ISI.PRE-mean(data48$ISI.PRE)
+data48$PSQI.PRE<-data48$PSQI.PRE-mean(data48$PSQI.PRE)
+data48$QualitéSommeilSur10.PRE<-data48$QualitéSommeilSur10.PRE-mean(data48$QualitéSommeilSur10.PRE)
+
+# Imagerie mentale
+data48$VVIQYeuxFermé.PRE<-data48$VVIQYeuxFermé.PRE-mean(data48$VVIQYeuxFermé.PRE)
+data48$VVIQYeuxOuvert.PRE<-data48$VVIQYeuxOuvert.PRE-mean(data48$VVIQYeuxOuvert.PRE)
+
+# Cauchermars
+data48$NombreCauchemarParMois.POST<-data48$NombreCauchemarParMois.POST-mean(data48$NombreCauchemarParMois.POST)
+data48$NombreCauchemarParMois.PRE<-data48$NombreCauchemarParMois.PRE-mean(data48$NombreCauchemarParMois.PRE)
+data48$Amelioration.NbCauchemars.PrePost <- data48$NombreCauchemarParMois.POST - data48$NombreCauchemarParMois.PRE
+
+
+
+
+
+```
+
+
+VD = cauchemars
+------------------------------------------
+
+### Amélioration du nombre de nombre de cauchemras par mois
+Effet significatifs de 2 variables non supposées être modérateurs -> A voir avec analyse de médiation
+
+ - Effet du score de qualité de sommeil:
+
+```{r}
+xmdl<-lm(data48$Amelioration.NbCauchemars.PrePost~data48$QualitéSommeilSur10.PRE)
+summary(xmdl)
+
+```
+
+
+- Effet du score de sentiment de controle spécifique: 
+```{r}
+xmdl<-lm(data48$Amelioration.NbCauchemars.PrePost~data48$SentimentControleSpécifique.PRE)
+summary(xmdl)
+```
+
+
+### Nuit de cauchemars par mois
+
+```{r}
+data48$AmeliorationNuit <- data48$NuitCauchemarParMois.PRE-data48$NuitCauchemarParMois.POST
+
+```
+
+
+- effet Qualité de sommeil
+```{r}
+xmdl<-lm(data48$AmeliorationNuit~data48$QualitéSommeilSur10.PRE)
+summary(xmdl)
+```
+
+
+
+
+VD = Amélioration PTSD 
+-----------------------
+
+### IERS
+
+```{r}
+data48$AmeliorationIERS<- data48$IERS.Global.PRE-data48$IERS.Global.POST
+
+```
+
+- Effet score PCLS (mais non-indépendance des 2 mesures ??)
+```{r}
+xmdl<-lm(data48$AmeliorationIERS~data48$PCLS.PRE)
+summary(xmdl)
+
+```
+
+VD = Evaluation Sommeil
+------------------------
+### Qualité sommeil
+
+```{r}
+data48$AmeliorationQualiteSommeil <- data48$QualitéSommeilSur10.POST-data48$QualitéSommeilSur10.PRE
+
+
+```
+
+- Effet score PCLS
+
+```{r}
+xmdl<-lm(data48$AmeliorationQualiteSommeil~data48$PCLS.PRE)
+summary(xmdl)
+```
+
+- Effet score IERS evitement:
+
+```{r}
+xmdl<-lm(data48$AmeliorationQualiteSommeil~data48$IERSEvitement.PRE)
+summary(xmdl)
+
+```
+
+### PSQI
+
+```{r}
+data48$AmeliorationPSQI<-data48$PSQI.PRE-data48$PSQI.POST
+
+
+```
+
+- effet score IERS:
+```{r}
+xmdl<-lm(data48$AmeliorationPSQI~data48$IERS.Global.PRE)
+summary(xmdl)
+
+```
+
+```{r}
+xmdl<-lm(data48$AmeliorationPSQI~data48$IERSEvitement.PRE)
+summary(xmdl)
+```
+
+```{r}
+xmdl<-lm(data48$AmeliorationPSQI~data48$IERSActivationNeurovégétative.PRE)
+summary(xmdl)
+```
+
+- Effet score PCLS:
+
+```{r}
+xmdl<-lm(data48$AmeliorationPSQI~data48$PCLS.PRE)
+summary(xmdl)
+
+```
+
+- effet score ISI -p =0.05
+```{r}
+xmdl<-lm(data48$AmeliorationPSQI~data48$ISI.PRE)
+summary(xmdl)
+
+```
+
+- effet WBSI suppression
+```{r}
+xmdl<-lm(data48$AmeliorationPSQI~data48$WBSIsuppression.PRE)
+summary(xmdl)
+
+```
+
+- WBSI intrusion
+```{r}
+xmdl<-lm(data48$AmeliorationPSQI~data48$WBSIintrusion.PRE)
+summary(xmdl)
+
+```
+
+### score ISI
+
+```{r}
+data48$AmeliorationISI<- data48$ISI.PRE-data48$ISI.POST
+```
+
+- effet WBSI intrusion
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$WBSIintrusion.PRE)
+summary(xmdl)
+```
+
+- effet WBSI suppression
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$WBSIsuppression.PRE)
+summary(xmdl)
+```
+
+- effet score dépression
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$dépression.PRE)
+summary(xmdl)
+```
+
+- effet score PSQI
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$PSQI.PRE)
+summary(xmdl)
+
+```
+
+- effet score PCLS
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$PCLS.PRE)
+summary(xmdl)
+```
+
+- IERS intrusion tangeant
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$IERSIntrusionSouvenirs.PRE)
+summary(xmdl)
+```
+
+- IERS neurovegetatif
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$IERSActivationNeurovégétative.PRE)
+summary(xmdl)
+```
+
+- IERS global
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$IERS.Global.PRE)
+summary(xmdl)
+```
+
