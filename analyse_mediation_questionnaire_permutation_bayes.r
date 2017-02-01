@@ -9,7 +9,7 @@ setwd('/home/claire/DATA/Etude Benjamin/')
 			
 pth<-"/home/claire/DATA/Etude Benjamin/"	
 f_nme<-"n48_PrePostSuivi.csv"
-f_nmeo<-"data_out.csv"
+f_nmeo<-"data_out_IERS_glob.csv"
 
 
 #Identify which variable names correspond to the particular elements of the model
@@ -25,7 +25,7 @@ cov_v<-c("") #To run a model without covariates, use c("");
 	#additional coviariates can be entered; enclose each name in quotes & separate with commas
 
 # Mediator
-m_v<-"VVIQYeuxFermé.PRE"
+m_v<-"IERS.Global.PRE"
 
 # VD
 y_v<-"NombreCauchemarParMois.POST"
@@ -82,7 +82,7 @@ stps<-10000 # number of MCMC steps that are retained
 
 #Toggle indicating whether standardized (set equal to 1) or raw (set equal to 0) data is to be used for the Bayesian
 #analysis. Be sure that the priors specified below are input in the same units as the intended analysis.
-bys_std<-1 
+bys_std<-1
 
 #Prior Distribution Parameters 
 #By default, these are set as an uniformative prior (with a mean of zero and a standard deviation of 1000). 
