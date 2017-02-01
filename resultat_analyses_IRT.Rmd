@@ -60,8 +60,19 @@ data48$NombreCauchemarParMois.POST<-data48$NombreCauchemarParMois.POST-mean(data
 data48$NombreCauchemarParMois.PRE<-data48$NombreCauchemarParMois.PRE-mean(data48$NombreCauchemarParMois.PRE)
 data48$Amelioration.NbCauchemars.PrePost <- data48$NombreCauchemarParMois.POST - data48$NombreCauchemarParMois.PRE
 
+#-------------------------------------------------
+# effet sur amaéliorations
+#-------------------------------------------------
 
-
+data48$AmeliorationSleep50<- data48$Sleep50.PRE-data48$Sleep50.POST
+data48$AmeliorationDetresse<- data48$DétresseSur10.PRE-data48$DétresseSur10.POST
+data48$AmeliorationIERS<- data48$IERS.Global.PRE-data48$IERS.Global.POST
+data48$AmeliorationPCLS<- data48$PCLS.PRE-data48$PCLS.POST
+data48$AmeliorationQualiteSommeil <- data48$QualitéSommeilSur10.POST-data48$QualitéSommeilSur10.PRE
+data48$AmeliorationPSQI<-data48$PSQI.PRE-data48$PSQI.POST
+data48$AmeliorationISI<- data48$ISI.PRE-data48$ISI.POST
+data48$AmeliorationEpworth <-data48$Epworth.PRE-data48$Epworth.POST
+data48$AmeliorationNuit <- data48$NuitCauchemarParMois.PRE-data48$NuitCauchemarParMois.POST
 
 
 ```
@@ -91,19 +102,23 @@ summary(xmdl)
 
 ### Nuit de cauchemars par mois
 
-```{r}
-data48$AmeliorationNuit <- data48$NuitCauchemarParMois.PRE-data48$NuitCauchemarParMois.POST
-
-```
-
-
 - effet Qualité de sommeil
+
 ```{r}
 xmdl<-lm(data48$AmeliorationNuit~data48$QualitéSommeilSur10.PRE)
 summary(xmdl)
+
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
 
+
+plot(data48$QualitéSommeilSur10.PRE, data48$AmeliorationNuit)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+ !! Variance non hom
 
 
 VD = Amélioration PTSD 
@@ -111,10 +126,6 @@ VD = Amélioration PTSD
 
 ### IERS
 
-```{r}
-data48$AmeliorationIERS<- data48$IERS.Global.PRE-data48$IERS.Global.POST
-
-```
 
 - Effet score PCLS (mais non-indépendance des 2 mesures ??)
 ```{r}
@@ -123,63 +134,137 @@ summary(xmdl)
 
 ```
 
-VD = Evaluation Sommeil
-------------------------
-### Qualité sommeil
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+```
+
 
 ```{r}
-data48$AmeliorationQualiteSommeil <- data48$QualitéSommeilSur10.POST-data48$QualitéSommeilSur10.PRE
+plot(data48$PCLS.PRE, data48$AmeliorationIERS)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
 
 
 ```
 
+
+
+VD = Evaluation Sommeil
+------------------------
+### Qualité sommeil
+
+
 - Effet score PCLS
 
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationQualiteSommeil~data48$PCLS.PRE)
 summary(xmdl)
+```
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+```
+
+```{r}
+plot(data48$PCLS.PRE, data48$AmeliorationQualiteSommeil)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
 ```
 
 - Effet score IERS evitement:
 
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationQualiteSommeil~data48$IERSEvitement.PRE)
 summary(xmdl)
 
 ```
-
-### PSQI
-
 ```{r}
-data48$AmeliorationPSQI<-data48$PSQI.PRE-data48$PSQI.POST
-
+par(mfrow = c(2,2))
+plot(xmdl)
 
 ```
 
+```{r}
+plot(data48$IERSEvitement.PRE, data48$AmeliorationQualiteSommeil)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+
+
+### PSQI
+
 - effet score IERS:
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationPSQI~data48$IERS.Global.PRE)
 summary(xmdl)
 
 ```
 
 ```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+
+```
+
+```{r}
+plot(data48$IERS.Global.PRE, data48$AmeliorationPSQI )
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+
+
+
+```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationPSQI~data48$IERSEvitement.PRE)
 summary(xmdl)
 ```
 
 ```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+```
+
+```{r}
+plot(data48$IERSEvitement.PRE, data48$AmeliorationPSQI )
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+
+```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationPSQI~data48$IERSActivationNeurovégétative.PRE)
 summary(xmdl)
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+```
+```{r}
+plot(data48$IERSActivationNeurovégétative.PRE, data48$AmeliorationPSQI )
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+
+
 - Effet score PCLS:
 
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationPSQI~data48$PCLS.PRE)
 summary(xmdl)
 
 ```
+
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+```
+
+```{r}
+plot(data48$PCLS.PRE, data48$AmeliorationPSQI )
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+
 
 - effet score ISI -p =0.05
 ```{r}
@@ -190,70 +275,198 @@ summary(xmdl)
 
 - effet WBSI suppression
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationPSQI~data48$WBSIsuppression.PRE)
 summary(xmdl)
 
 ```
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+```
+
+```{r}
+plot(data48$WBSIsuppression.PRE, data48$AmeliorationPSQI )
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+
+
 
 - WBSI intrusion
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationPSQI~data48$WBSIintrusion.PRE)
 summary(xmdl)
 
 ```
 
-### score ISI
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+```
 
 ```{r}
-data48$AmeliorationISI<- data48$ISI.PRE-data48$ISI.POST
+plot(data48$WBSIintrusion.PRE, data48$AmeliorationPSQI )
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
 ```
+
+
+### score ISI
+
 
 - effet WBSI intrusion
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationISI~data48$WBSIintrusion.PRE)
 summary(xmdl)
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+```
+
+```{r}
+plot(data48$WBSIintrusion.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+
+
+```
+
+
 - effet WBSI suppression
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationISI~data48$WBSIsuppression.PRE)
 summary(xmdl)
 ```
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+
+```
+```{r}
+plot(data48$WBSIsuppression.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+
+```
+
 
 - effet score dépression
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationISI~data48$dépression.PRE)
 summary(xmdl)
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+
+```
+
+```{r}
+plot(data48$dépression.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+
+```
+
+
 - effet score PSQI
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationISI~data48$PSQI.PRE)
 summary(xmdl)
 
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+
+```
+
+```{r}
+plot(data48$PSQI.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+
+```
+
+
+
 - effet score PCLS
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationISI~data48$PCLS.PRE)
 summary(xmdl)
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+
+```
+
+```{r}
+plot(data48$PCLS.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+
+```
+
+
 - IERS intrusion tangeant
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationISI~data48$IERSIntrusionSouvenirs.PRE)
 summary(xmdl)
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+
+```
+
+```{r}
+plot(data48$IERSIntrusionSouvenirs.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+
+```
+
 - IERS neurovegetatif
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationISI~data48$IERSActivationNeurovégétative.PRE)
 summary(xmdl)
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+
+```
+
+```{r}
+plot(data48$IERSActivationNeurovégétative.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+
+```
+
 - IERS global
 ```{r}
+rm(xmdl)
 xmdl<-lm(data48$AmeliorationISI~data48$IERS.Global.PRE)
 summary(xmdl)
 ```
 
+```{r}
+par(mfrow = c(2,2))
+plot(xmdl)
+
+```
+
+```{r}
+plot(data48$IERS.Global.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+
+```
