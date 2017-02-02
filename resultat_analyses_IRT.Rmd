@@ -10,13 +10,18 @@ Analyses de modération à l'aide de  modèles linéaires
 Résumé des résultats
 --------------------
 
+
+Problème général : la plupart des données n'a pas une distribution normale + analyse de corrélation robuste sous matlab ne retourne aucun effet significatif, excepté pour WBSISuppression~AméliorationPSQI 
+
+
 Analyse réalisée avec des modèles linéaire (ie. équivalent anova)
 
 ### Variable "cauchemars"
 Un seul effet de modération a été trouvé, celui de l'effet du score de qualité de sommeil/10 sur l'amélioration du nombre de nuits avec cauchemras par mois.
 
 ### Variable "PTSD"
-Seul effet de modération trouvé: le score de PCLS influe sur l'amélioration du score de IERS (mais non-indépendance de ces 2 mesures ??)
+Seul effet de modération trouvé: le score de PCLS influe sur l'amélioration du score de IERS (mais non-indépendance de ces 2 mesures ??) 
+
 
 ### Variable "sommeil"
 Variable avec le plus d'effets de modération.
