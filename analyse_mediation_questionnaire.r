@@ -48,67 +48,28 @@ data48$AmeliorationEpworth <-data48$Epworth.PRE-data48$Epworth.POST
 data48$AmeliorationNuit <- data48$NuitCauchemarParMois.PRE-data48$NuitCauchemarParMois.POST
 data48$Amelioration.NbCauchemars.PrePost <- data48$NombreCauchemarParMois.PRE - data48$NombreCauchemarParMois.POST
 
-#-----------------------------------------------
-# Confirmatory Factor Analysis
-#----------------------------------------------
 
+# Causal mediation
 
-library(lavaan)
-library(semPlot)
+Improv_Nightmares = data48$AmeliorationNuit+ data48$AmeliorationSleep50 + data48$Amelioration.NbCauchemars.PrePost+data48$AmeliorationDetresse
 
-Improv_Nightmares =~ data48$AmeliorationNuit+ data48$AmeliorationSleep50 + data48$Amelioration.NbCauchemars.PrePost+data48$AmeliorationDetresse
-Improv_PTSD =~ data48$AmeliorationIERS + data48$AmeliorationPCLS
-Score_imagerie =~ data48$GordonTotal.PRE + data48$VVIQYeuxFermé.PRE + data48$VVIQYeuxOuvert.PRE+data48$TestdeRotation.PRE
+Score_suppression = data48$IERSEvitement.PRE + data48$WBSIsuppression.PRE
+Score_Intrusion = data48$IERSIntrusionSouvenirs.PRE + data48$WBSIintrusion.PRE
+Score_imagerie = data48$GordonTotal.PRE + data48$VVIQYeuxFermé.PRE + data48$VVIQYeuxOuvert.PRE+data48$TestdeRotation.PRE
 
-# sepcify model
-nightmare.mod <- 'Improv_Nightmares =~ NuitCauchemarParMois.POST + NombreCauchemarParMois.POST 
-Improv_PTSD =~ IERSIntrusionSouvenirs.POST + IERSActivationNeurovégétative.POST + IERSEvitement.POST
-Score_imagerie =~ GordonTotal.PRE + VVIQYeuxFermé.PRE + VVIQYeuxOuvert.PRE+ TestdeRotation.PRE'
+# Y~X
+Model1 = lm(data48$AmeliorationQualiteSommeil~data48$IERSEvitement.PRE)
+summary(Model1)$coef
 
-nightmare.mod2 <- 'Improv_Nightmares =~ NuitCauchemarParMois.POST + NombreCauchemarParMois.POST 
-Improv_PTSD =~ IERSIntrusionSouvenirs.POST + IERSActivationNeurovégétative.POST + IERSEvitement.POST
-Score_imagerie =~ GordonTotal.PRE + VVIQYeuxFermé.PRE + VVIQYeuxOuvert.PRE+ TestdeRotation.PRE'
+# Y ~M + X
+Model2 = lm(data48$AmeliorationQualiteSommeil~data48$VVIQYeuxOuvert.PRE + data48$IERSEvitement.PRE )
+summary(Model2)$coef
 
-# fit model cfa
-fit<-cfa(nightmare.mod, data=data48)
+# M ~ X
+Model3 = lm(data48$VVIQYeuxOuvert.PRE ~data48$IERSEvitement.PRE)
+summary(Model3)$coef
 
-summary(fit, fit.measures=TRUE)
+source('~/SCRIPTS/IRT_analysis/mediate.R')
 
+with(data48, mediate(IERSEvitement.PRE, AmeliorationQualiteSommeil, VVIQYeuxOuvert.PRE, names=c("Evitement", "Amĺioration Qualité Sommeil", "VVIQ Ouvert")))
 
-#-----------------------------------------------
-# SEM Analysis
-#----------------------------------------------
-
-
-library(lavaan)
-library(semPlot)
-
-Improv_Nightmares =~ data48$AmeliorationNuit+ data48$AmeliorationSleep50 + data48$Amelioration.NbCauchemars.PrePost+data48$AmeliorationDetresse
-Score_suppression =~ data48$IERSEvitement.PRE + data48$WBSIsuppression.PRE
-Score_Intrusion =~ data48$IERSIntrusionSouvenirs.PRE + data48$WBSIintrusion.PRE
-Score_imagerie =~ data48$GordonTotal.PRE + data48$VVIQYeuxFermé.PRE + data48$VVIQYeuxOuvert.PRE+data48$TestdeRotation.PRE
-
-
-Improv_Nightmares =~ data48$AmeliorationNuit+ data48$AmeliorationSleep50 + data48$Amelioration.NbCauchemars.PrePost+data48$AmeliorationDetresse
-Improv_PTSD =~ data48$AmeliorationIERS + data48$AmeliorationPCLS
-Score_imagerie =~ data48$GordonTotal.PRE + data48$VVIQYeuxFermé.PRE + data48$VVIQYeuxOuvert.PRE+data48$TestdeRotation.PRE
-
-# sepcify model
-mod1 <- '
-        # measurement model
-        Improv_Nightmares =~ AmeliorationNuit+ AmeliorationSleep50 + Amelioration.NbCauchemars.PrePost+ AmeliorationDetresse
-        Score_Intrusion =~ IERSIntrusionSouvenirs.PRE +  WBSIintrusion.PRE
-        Score_imagerie =~ GordonTotal.PRE + VVIQYeuxFermé.PRE + VVIQYeuxOuvert.PRE + TestdeRotation.PRE
-
-        # REGRESIONS  
-        Improv_Nightmares ~ Score_Intrusion + Score_imagerie
-        Score_Intrusion ~ Score_imagerie
-'
-
-
-
-fit <- sem(mod1, data=data48)
-summary(fit, standardized=TRUE)
-
-semPaths(fit, "std", "est" )
-semPaths(fit)
