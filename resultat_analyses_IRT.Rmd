@@ -59,6 +59,8 @@ data48$QualitéSommeilSur10.PRE<-data48$QualitéSommeilSur10.PRE-mean(data48$Qua
 # Imagerie mentale
 data48$VVIQYeuxFermé.PRE<-data48$VVIQYeuxFermé.PRE-mean(data48$VVIQYeuxFermé.PRE)
 data48$VVIQYeuxOuvert.PRE<-data48$VVIQYeuxOuvert.PRE-mean(data48$VVIQYeuxOuvert.PRE)
+data48$GordonTotal.PRE <- data48$GordonTotal.PRE - mean(data48$GordonTotal.PRE)
+data48$TestdeRotation.PRE <- data48$TestdeRotation.PRE - mean(data48$TestdeRotation.PRE)
 
 # Cauchermars
 data48$NombreCauchemarParMois.POST<-data48$NombreCauchemarParMois.POST-mean(data48$NombreCauchemarParMois.POST)
@@ -81,6 +83,32 @@ data48$AmeliorationNuit <- data48$NuitCauchemarParMois.PRE-data48$NuitCauchemarP
 
 
 ```
+
+
+#### Modération par imagerie mentale
+
+```{r}
+xmdl<-lm(data48$AmeliorationNuit~data48$TestdeRotation.PRE)
+summary(xmdl)
+
+par(mfrow = c(2,2))
+plot(xmdl)
+
+plot(data48$TestdeRotation.PRE, data48$AmeliorationNuit)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+
+```{r}
+xmdl<-lm(data48$AmeliorationISI~data48$VVIQYeuxOuvert.PRE)
+summary(xmdl)
+
+par(mfrow = c(2,2))
+plot(xmdl)
+
+plot(data48$VVIQYeuxOuvert.PRE, data48$AmeliorationISI)
+abline(a=coef(xmdl)[1], coef(xmdl)[2])
+```
+
 
 
 VD = cauchemars
