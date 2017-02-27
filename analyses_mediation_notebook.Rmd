@@ -1,0 +1,139 @@
+---
+title: "Analyses de médiation - R Notebook"
+output: html_notebook
+---
+
+
+```{r}
+source('~/SCRIPTS/IRT_analysis/mediate.R')
+setwd('/home/claire/DATA/Etude Benjamin/')
+
+data48 <- read.csv('n48_PrePostSuivi.csv')
+
+patient<-1:48
+data48$patient<-as.factor(patient)
+
+```
+
+
+# data centering
+```{r}
+# Sommeil
+data48$Epworth.PRE<-data48$Epworth.PRE-mean(data48$Epworth.PRE)
+data48$ISI.PRE<-data48$ISI.PRE-mean(data48$ISI.PRE)
+data48$PSQI.PRE<-data48$PSQI.PRE-mean(data48$PSQI.PRE)
+data48$QualitéSommeilSur10.PRE<-data48$QualitéSommeilSur10.PRE-mean(data48$QualitéSommeilSur10.PRE)
+data48$Sleep50.PRE  <- data48$Sleep50.PRE - mean(data48$Sleep50.PRE )
+data48$DétresseSur10.PRE <- data48$DétresseSur10.PRE -mean(data48$DétresseSur10.PRE)
+data48$NuitCauchemarParMois.PRE <- data48$NuitCauchemarParMois.PRE-mean(data48$NuitCauchemarParMois.PRE)
+data48$NombreCauchemarParMois.PRE <- data48$NombreCauchemarParMois.PRE - mean(data48$NombreCauchemarParMois.PRE)
+
+data48$Epworth.POST<-data48$Epworth.POST-mean(data48$Epworth.POST)
+data48$ISI.POST<-data48$ISI.POST-mean(data48$ISI.POST)
+data48$PSQI.POST<-data48$PSQI.POST-mean(data48$PSQI.POST)
+data48$QualitéSommeilSur10.POST<-data48$QualitéSommeilSur10.POST-mean(data48$QualitéSommeilSur10.POST)
+data48$Sleep50.POST  <- data48$Sleep50.POST - mean(data48$Sleep50.POST )
+data48$DétresseSur10.POST <- data48$DétresseSur10.POST -mean(data48$DétresseSur10.POST)
+data48$NuitCauchemarParMois.POST <- data48$NuitCauchemarParMois.POST-mean(data48$NuitCauchemarParMois.POST)
+data48$NombreCauchemarParMois.POST <- data48$NombreCauchemarParMois.POST - mean(data48$NombreCauchemarParMois.POST)
+
+# Imagerie
+data48$VVIQYeuxFermé.PRE<-data48$VVIQYeuxFermé.PRE-mean(data48$VVIQYeuxFermé.PRE)
+data48$VVIQYeuxOuvert.PRE<-data48$VVIQYeuxOuvert.PRE-mean(data48$VVIQYeuxOuvert.PRE)
+data48$GordonTotal.PRE <- data48$GordonTotal.PRE - mean(data48$GordonTotal.PRE)
+data48$TestdeRotation.PRE <- data48$TestdeRotation.PRE - mean(data48$TestdeRotation.PRE)
+
+data48$VVIQYeuxFermé.POST<-data48$VVIQYeuxFermé.POST-mean(data48$VVIQYeuxFermé.POST)
+data48$VVIQYeuxOuvert.POST<-data48$VVIQYeuxOuvert.POST-mean(data48$VVIQYeuxOuvert.POST)
+data48$GordonTotal.POST <- data48$GordonTotal.POST - mean(data48$GordonTotal.POST)
+data48$TestdeRotation.POST <- data48$TestdeRotation.POST - mean(data48$TestdeRotation.POST)
+
+# PTSD
+data48$IERSIntrusionSouvenirs.PRE<-data48$IERSIntrusionSouvenirs.PRE-mean(data48$IERSIntrusionSouvenirs.PRE)
+data48$IERSEvitement.PRE<-data48$IERSEvitement.PRE - mean(data48$IERSEvitement.PRE)
+data48$IERSActivationNeurovégétative.PRE <-data48$IERSActivationNeurovégétative.PRE - mean(data48$IERSActivationNeurovégétative.PRE)
+data48$IERS.Global.PRE<-data48$IERS.Global.PRE-mean(data48$IERS.Global.PRE)
+data48$PCLS.PRE<-data48$PCLS.PRE-mean(data48$PCLS.PRE)
+
+# WBSI
+data48$WBSIintrusion.PRE <- data48$WBSIintrusion.PRE - mean(data48$WBSIintrusion.PRE)
+data48$WBSIsuppression.PRE <-data48$WBSIsuppression.PRE - mean(data48$WBSIsuppression.PRE)
+data48$SentimentControleGénéral.PRE <- data48$SentimentControleGénéral.PRE - mean(data48$SentimentControleGénéral.PRE)
+
+```
+
+
+
+
+
+# Pre-Post Cauchemras, influence de l'imagerie
+```{r}
+data48$PostCauchemars <- data48$NuitCauchemarParMois.POST + data48$NombreCauchemarParMois.POST + data48$Sleep50.POST + data48$DétresseSur10.POST
+data48$PreCauchemars <- data48$NuitCauchemarParMois.PRE + data48$NombreCauchemarParMois.PRE + data48$Sleep50.PRE + data48$DétresseSur10.PRE
+
+data48$PreScore_imagerie = data48$GordonTotal.PRE + data48$VVIQYeuxFermé.PRE + data48$VVIQYeuxOuvert.PRE+data48$TestdeRotation.PRE
+
+with(data48, mediate(PreCauchemars,PostCauchemars, PreScore_imagerie, names=c("Cauchemars Pre", "Cauchemars Post", "Score Imagerie")))
+
+
+```
+# Cauchemars pre post, influence score VVIQ
+
+```{r}
+
+with(data48, mediate(PreCauchemars,PostCauchemars, GordonTotal.PRE, names=c("Cauchemars Pre", "Cauchemars Post", "GordonTotal.PRE")))
+
+
+```
+
+# cauchemars pre post, influence suppression
+
+```{r}
+
+data48$Score_Suppression <- data48$WBSIsuppression.PRE + data48$IERSEvitement.PRE
+
+with(data48, mediate(PreCauchemars,PostCauchemars, Score_Suppression, names=c("Cauchemars Pre", "Cauchemars Post", "Score_Suppression")))
+
+
+```
+
+# cauchemars pre post, influence intrusion
+```{r}
+
+data48$Score_Intrusion = data48$IERSIntrusionSouvenirs.PRE + data48$WBSIintrusion.PRE
+
+with(data48, mediate(PreCauchemars,PostCauchemars, Score_Intrusion, names=c("Cauchemars Pre", "Cauchemars Post", "Score_Intrusion")))
+
+```
+
+```{r}
+# Amelioration évaluation des cauchemars
+
+data48$AmeĺiorationEvaluationCauchemars <- data48$PreCauchemars-data48$PostCauchemars
+
+
+with(data48, mediate(Score_Intrusion,AmeĺiorationEvaluationCauchemars, PreScore_imagerie, names=c("Score_Intrusion","AmeĺiorationEvaluationCauchemars", "PreScore_imagerie")))
+
+
+```
+
+```{r}
+with(data48, mediate(PreScore_imagerie,AmeĺiorationEvaluationCauchemars, Score_Suppression, names=c("PreScore_imagerie","AmeĺiorationEvaluationCauchemars", "Score_Suppression")))
+
+```
+
+```{r}
+# évaluation PTSD
+data48$Amelioration_PTSD<- data48$IERSIntrusionSouvenirs.PRE - data48$IERSIntrusionSouvenirs.POST + data48$IERSEvitement.PRE-data48$IERSEvitement.POST + data48$IERSActivationNeurovégétative.PRE-data48$IERSActivationNeurovégétative.POST + data48$PCLS.PRE-data48$PCLS.POST
+
+with(data48, mediate(Score_Suppression,Amelioration_PTSD, PreScore_imagerie, names=c( "Score_Suppression","AmeĺiorationPTSD", "PreScore_imagerie")))
+
+
+```
+
+```{r}
+
+with(data48, mediate(Score_Intrusion,Amelioration_PTSD, PreScore_imagerie, names=c( "Intrusion","AmeĺiorationPTSD", "PreScore_imagerie")))
+
+```
+
